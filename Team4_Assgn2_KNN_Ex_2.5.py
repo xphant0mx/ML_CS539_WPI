@@ -82,7 +82,6 @@ for K in range(30):
     K = K+1
     # K Nearest Neighbor Regressor model
     knn_diabetes = KNeighborsRegressor(n_neighbors = K)
-    #diabetes_scores = cross_val_score(knn_diabetes,  X_train, Y_train, scoring="neg_mean_squared_error", cv=5)
     knn_predict = cross_val_predict(knn_diabetes, X_train, Y_train)
     #Store RMSE (pred vs data) score for each K
     error = sqrt(mean_squared_error(Y_train,knn_predict)) #calculate rmse
@@ -110,7 +109,7 @@ corr_matrix["TARG"].sort_values(ascending=False)
 # In[7]:
 
 
-# Visualize prediction vs data for best hyperparameter K=15
+# Visualize prediction vs data for K=15
 K = 15
 knn_diabetes = KNeighborsRegressor(n_neighbors=K)
 knn_predict = cross_val_predict(knn_diabetes, X_train, Y_train)
@@ -126,11 +125,10 @@ plt.title('KNN Regressor, K=15')
 # In[8]:
 
 
-# Visualize prediction vs data for best hyperparameter K=1
+# Visualize prediction vs data for K=1
 K = 1
 knn_diabetes = KNeighborsRegressor(n_neighbors=K)
 knn_predict = cross_val_predict(knn_diabetes, X_train, Y_train)
-
 plt.scatter(BMI, Y_train, c='k', label='data')
 plt.scatter(BMI, knn_predict, c='g', label='prediction')
 plt.legend()
@@ -146,8 +144,9 @@ plt.title('KNN Regressor, K=1')
 K = 15
 knn_diabetes = KNeighborsRegressor(n_neighbors=K)
 #Predict target values based on test data
-diabetes_scores = cross_val_score(knn_diabetes,  X_test, Y_test, scoring="neg_mean_squared_error", cv=5)
-rmse_scores = np.sqrt(-diabetes_scores)
+knn_diabetes.fit(X_train, Y_train)
+n15_predict = knn_diabetes.predict(X_test)
+rmse_scores = np.sqrt(mean_squared_error(Y_test, n15_predict))
 display_scores(rmse_scores)
 
 
@@ -174,7 +173,7 @@ print(grid.best_params_)
 # In[11]:
 
 
-# Visualization using best weight and
+# Visualization using best combination: k=18 and 'distance' weight
 knn_diabetes = KNeighborsRegressor(n_neighbors=18, weights = 'distance')
 knn_predict = cross_val_predict(knn_diabetes, X_train, Y_train)
 BMI = X_train["BMI"].copy()
@@ -189,9 +188,11 @@ plt.title('KNN Regressor, K=18')
 # In[12]:
 
 
+# Average RMSE for KNN Regressor with K =18 for Test Data
 #Predict target values based on test data
-diabetes_scores = cross_val_score(knn_diabetes,  X_test, Y_test, scoring="neg_mean_squared_error", cv=5)
-rmse_scores = np.sqrt(-diabetes_scores)
+knn_diabetes.fit(X_train, Y_train)
+n18_predict = knn_diabetes.predict(X_test)
+rmse_scores = np.sqrt(mean_squared_error(Y_test, n18_predict))
 display_scores(rmse_scores)
 
 
